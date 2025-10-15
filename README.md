@@ -1,1 +1,1 @@
-Day 1: Read first chapter of "Programming Massively Parallel Processors". Simple vector addition in cuda. vector_add on leetgpu, then repeated on colab with memory management.
+Day 1: Read first chapter of "Programming Massively Parallel Processors". Simple vector addition in cuda on leetgpu, then repeated on colab with memory management.
