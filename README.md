@@ -7,3 +7,5 @@ Day 3: Working on sum/Reduction. Got a working LeetGPU implementation for now, h
 Day 4: Continued on Sum/reduction. Adding tail shuffle and grid-strided loading. SiLU kernel as review. Read chapter 2 of PMPP.
 
 Day 5: Read Chapter 3 in PMPP. Made a single block implementation of prefix-Sum. Will have to continue tomorrow. 
+
+Day 6: Halfway through chapter 4 in PMPP. Completed cross-block implementaion of prefix-Sum.
