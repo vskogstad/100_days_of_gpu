@@ -9,3 +9,5 @@ Day 4: Continued on Sum/reduction. Adding tail shuffle and grid-strided loading.
 Day 5: Read Chapter 3 in PMPP. Made a single block implementation of prefix-Sum. Will have to continue tomorrow. 
 
 Day 6: Halfway through chapter 4 in PMPP. Completed cross-block implementaion of prefix-Sum.
+
+Day 7: Completed chapter 4. Stuck for hours on the hierarchical approach for generalizing prefix-Sum. Today felt like attempting to cram to many techniques/concepts with a shaky base understanding. Implemented a basic matrix add kernel.
