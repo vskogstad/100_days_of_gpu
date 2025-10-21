@@ -11,3 +11,5 @@ Day 5: Read Chapter 3 in PMPP. Made a single block implementation of prefix-Sum.
 Day 6: Halfway through chapter 4 in PMPP. Completed cross-block implementaion of prefix-Sum.
 
 Day 7: Completed chapter 4. Stuck for hours on the hierarchical approach for generalizing prefix-Sum. Today felt like attempting to cram to many techniques/concepts with a shaky base understanding. Implemented a basic matrix add kernel.
+
+Day 8: Read the first quarter of https://www.aleksagordic.com/blog/matmul. Implemented a tiled matrix multiply. New concepts: Templating, Memory coalescence, use of __restrict__ and #pragma unroll
