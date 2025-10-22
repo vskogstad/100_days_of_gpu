@@ -13,3 +13,5 @@ Day 6: Halfway through chapter 4 in PMPP. Completed cross-block implementaion of
 Day 7: Completed chapter 4. Stuck for hours on the hierarchical approach for generalizing prefix-Sum. Today felt like attempting to cram to many techniques/concepts with a shaky base understanding. Implemented a basic matrix add kernel.
 
 Day 8: Read the first quarter of https://www.aleksagordic.com/blog/matmul. Implemented a tiled matrix multiply. New concepts: Templating, Memory coalescence, use of __restrict__ and #pragma unroll
+
+Day 9: Tiled matrix transpose. Happy with results today, cleared up some of my misunderstandings with coalescing and managed to mostly reason about how to solve this problem efficiently on my own. New concepts: Bank conflicts.
