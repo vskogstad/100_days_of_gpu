@@ -19,3 +19,5 @@ Day 9: Tiled matrix transpose. Happy with results today, cleared up some of my m
 Day 10: Naive matrix copy. Did not manage to get loading in float4 to minimize overhead. A bit of a let down after good progress yesterday. Will continue tomorrow.
 
 Day 11: Tiled vectorized matrix copy. Vectorized RGB-invert on leetcode. Watched 3blue1brown video on convolution. Implementing tomorrow.
+
+Day 12: Naive convolution and in-place array reversal.
