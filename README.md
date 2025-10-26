@@ -21,3 +21,5 @@ Day 10: Naive matrix copy. Did not manage to get loading in float4 to minimize o
 Day 11: Tiled vectorized matrix copy. Vectorized RGB-invert on leetcode. Watched 3blue1brown video on convolution. Implementing tomorrow.
 
 Day 12: Naive convolution and in-place array reversal.
+
+Day 13: Dynamic shared memory and usage of __constant__ for 1D-convolution.
