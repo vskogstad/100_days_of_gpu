@@ -1,29 +1,32 @@
 #include <cuda_runtime.h>
+//#include <stdio.h>
 
-__global__ void convolution_1d_kernel(const float* input, const float* kernel, float* output, int input_size, int kernel_size) {
-    int idx = blockDim.x * blockIdx.x + threadIdx.x;
-    float acc = 0.0f;
-    __shared__ float smem[2048];
-    for (int i=threadIdx.x; i <kernel_size; i+= blockDim.x) {
-        smem[i] = kernel[i];
+__global__ void reverse_array(float* input, int N) {
+    int tid = threadIdx.x;
+    int bid = blockIdx.x;
+    int T = blockDim.x;
+    int base_f = T * bid;
+    int base_b = N - (bid + 1) * T;
+    // calculate threads position in both ends.
+    int f = base_f + tid;
+    int b = base_b + (T - 1 - tid);
+    int front_valid = min(T, N - base_f);
+    int back_valid = min(min(T, N - base_b), T + base_b);
+    if (tid < min(front_valid, back_valid)) {
+        float x = input[f];
+        float y = input[b];
+        input[b] = x;
+        input[f] = y;
+
     }
-    __syncthreads();    
-    if (idx < input_size-kernel_size+1) {
-        #pragma unroll
-        for (int j = 0; j < kernel_size; j++) {
-            acc += input[idx + j] * smem[j];
-        }
-        output[idx] = acc;
-        
-    }
+    
 }
 
-// input, kernel, output are device pointers (i.e. pointers to memory on the GPU)
-extern "C" void solve(const float* input, const float* kernel, float* output, int input_size, int kernel_size) {
-    int output_size = input_size - kernel_size + 1;
+// input is device pointer
+extern "C" void solve(float* input, int N) {
+    if (N == 0) return;
     int threadsPerBlock = 256;
-    int blocksPerGrid = (output_size + threadsPerBlock - 1) / threadsPerBlock;
-
-    convolution_1d_kernel<<<blocksPerGrid, threadsPerBlock>>>(input, kernel, output, input_size, kernel_size);
+    int blocksPerGrid = (N + 2*threadsPerBlock - 1) / (2 * threadsPerBlock);
+    reverse_array<<<blocksPerGrid, threadsPerBlock>>>(input, N);
     cudaDeviceSynchronize();
 }
