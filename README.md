@@ -25,3 +25,5 @@ Day 12: Naive convolution and in-place array reversal.
 Day 13: Dynamic shared memory and usage of __constant__ for 1D-convolution.
 
 Day 14: Back to array reversal. Tiled register swap instead of naive baseline.
+
+Day 15: Naive SwiGLU kernel. Short on time today.
