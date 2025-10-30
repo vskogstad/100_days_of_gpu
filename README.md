@@ -29,3 +29,5 @@ Day 14: Back to array reversal. Tiled register swap instead of naive baseline.
 Day 15: Naive SwiGLU kernel. Short on time today.
 
 Day 16: Micro optimizations on SwiGLU kernel. Single block naive RMSNorm kernel.
+
+Day 17. Unfinnished improvements on RMSNorm kernel. Reusing binary reduction and warp shuffling from reduction kernel.
