@@ -30,4 +30,6 @@ Day 15: Naive SwiGLU kernel. Short on time today.
 
 Day 16: Micro optimizations on SwiGLU kernel. Single block naive RMSNorm kernel.
 
-Day 17. Unfinnished improvements on RMSNorm kernel. Reusing binary reduction and warp shuffling from reduction kernel.
+Day 17: Unfinnished improvements on RMSNorm kernel. Reusing binary reduction and warp shuffling from reduction kernel.
+
+Day 18: Improved RMSNorm kernel to 98th percentile on LeetGPU. Very happy with that. 
