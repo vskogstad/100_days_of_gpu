@@ -35,3 +35,5 @@ Day 17: Unfinnished improvements on RMSNorm kernel. Reusing binary reduction and
 Day 18: Improved RMSNorm kernel to 98th percentile on LeetGPU. Very happy with that. 
 
 Day 19: Count array element. Buggy, fails for large N.
+
+Day 20: Got count array element to pass somehow. 
