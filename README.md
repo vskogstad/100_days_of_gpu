@@ -37,3 +37,5 @@ Day 18: Improved RMSNorm kernel to 98th percentile on LeetGPU. Very happy with t
 Day 19: Count array element. Buggy, fails for large N.
 
 Day 20: Got count array element to pass somehow. 
+
+Day 21: Improved count array element. Should have just used atomicAdd from the start. Naive single block softmax. 
