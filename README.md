@@ -39,3 +39,5 @@ Day 19: Count array element. Buggy, fails for large N.
 Day 20: Got count array element to pass somehow. 
 
 Day 21: Improved count array element. Should have just used atomicAdd from the start. Naive single block softmax. 
+
+Day 22: Ironed out some bugs in my softmax-kernel. Added warp shuffling. Attempted to cache, but see no speedups.
