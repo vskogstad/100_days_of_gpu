@@ -3,6 +3,7 @@
 
 __global__ void softmax_kernel(const float* input, float* output, int N) {
     __shared__ float smem[512];
+    __shared__ float max_mem[512];
     __shared__ float max_x;
     __shared__ float total_sum;
     int tid = threadIdx.x;
@@ -10,17 +11,41 @@ __global__ void softmax_kernel(const float* input, float* output, int N) {
     float local_max = -INFINITY;
 
     // Stage 1: find max values (single thread of block)
+    float m_t = -INFINITY;
+    float s_t = 0.0f;
     for (int i = idx; i < N; i += blockDim.x * gridDim.x) {
-        if (input[i] > local_max) local_max = input[i];
+        float x = input[i];
+        if (x > m_t) {
+            s_t = s_t * expf(m_t-x) + 1;  // 1 = expf(x-x)
+            m_t = x;
+        }
+        else s_t += expf(x - m_t);
     }
-    smem[tid] = local_max;
+    smem[tid] = s_t;
+    max_mem[tid] = m_t;
     __syncthreads();
-    // Reduce down to one max value in block
-    for (int stride = blockDim.x/2; stride >= warpSize; stride/=2) {
-        if (tid < stride && smem[tid+stride] > smem[tid]) smem[tid] = smem[tid+stride];
+    
+    // Reduce down to one max value and one sum in block
+    for (int stride = blockDim.x/2; stride >= 1; stride/=2) {
+        if (tid < stride && tid + stride < N) {
+            if (max_mem[tid] < max_mem[tid+stride]) {
+                // m2 > m1
+                smem[tid] = smem[tid] * expf(max_mem[tid] - max_mem[tid+stride]) + smem[tid+stride];
+                max_mem[tid] = max_mem[tid+stride];
+            }
+            else {
+                // m1 > m2
+                smem[tid] = smem[tid] + expf(max_mem[tid+stride] - max_mem[tid]) * smem[tid+stride];
+            }
+        }
         __syncthreads();
     }
-    float val = smem[tid];
+    if (tid == 0){
+        max_x = max_mem[0];
+        total_sum = smem[0];
+    }
+    __syncthreads();
+    /*float val = smem[tid];
     // warp shuffling
     if (tid < warpSize) {
         unsigned mask = __activemask();
@@ -31,39 +56,11 @@ __global__ void softmax_kernel(const float* input, float* output, int N) {
         val = fmax(val, __shfl_down_sync(mask, val, 1));
         if (tid == 0) max_x = val;
     }
-    __syncthreads();
+    __syncthreads();*/
 
-    // stage 2: calculate sum
-    float local_sum = 0.0f;
+    //stage 2: Calculate the softmax
     for (int i = idx; i < N; i += blockDim.x * gridDim.x) {
-        float e = expf(input[i] - max_x);
-        output[i] = e;
-        local_sum += e;
-
-    }
-    smem[tid] = local_sum;
-    __syncthreads();
-    // reduce to total sum:
-    for (int stride = blockDim.x/2; stride >= warpSize; stride/=2) {
-        if (tid < stride) smem[tid] += smem[tid+stride];
-        __syncthreads();
-    }
-    float sm = 0.0f;
-    if (tid < warpSize) {
-        sm = smem[tid];                  // smem[0..31] are valid partials
-        unsigned mask = __activemask();  // warp 0’s lanes
-        sm += __shfl_down_sync(mask, sm, 16);
-        sm += __shfl_down_sync(mask, sm, 8);
-        sm += __shfl_down_sync(mask, sm, 4);
-        sm += __shfl_down_sync(mask, sm, 2);
-        sm += __shfl_down_sync(mask, sm, 1);
-        if ((tid & 31) == 0) total_sum = sm;  // lane 0 writes
-    }
-    __syncthreads(); // ensure total_sum visible
-
-    //stage 3: Calculate the softmax
-    for (int i = idx; i < N; i += blockDim.x * gridDim.x) {
-        output[i] /= total_sum;
+        output[i] = expf(input[i] - max_x) / total_sum;
     }
 }
 
