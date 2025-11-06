@@ -43,3 +43,5 @@ Day 21: Improved count array element. Should have just used atomicAdd from the s
 Day 22: Ironed out some bugs in my softmax-kernel. Added warp shuffling. Attempted to cache, but see no speedups.
 
 Day 23: Online softmax, single block.
+
+Day 24: Better guards, incomplete warp-shuffle.

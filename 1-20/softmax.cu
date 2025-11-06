@@ -26,19 +26,36 @@ __global__ void softmax_kernel(const float* input, float* output, int N) {
     __syncthreads();
     
     // Reduce down to one max value and one sum in block
-    for (int stride = blockDim.x/2; stride >= 1; stride/=2) {
-        if (tid < stride && tid + stride < N) {
-            if (max_mem[tid] < max_mem[tid+stride]) {
-                // m2 > m1
-                smem[tid] = smem[tid] * expf(max_mem[tid] - max_mem[tid+stride]) + smem[tid+stride];
-                max_mem[tid] = max_mem[tid+stride];
+    for (int stride = blockDim.x/2; stride >= warpSize; stride/=2) {
+        if (tid < stride) {
+            float m1 = max_mem[tid];            float s1 = smem[tid];
+            float m2 = max_mem[tid+stride];     float s2 = smem[tid+stride];
+            if (s2 == 0.0f) {/*Do nothing*/}
+            else if (s1 == 0.0f) {
+                max_mem[tid] = m2; 
+                smem[tid] = s2;
+            }
+            else if (m1 < m2) {
+                smem[tid] = s1 * expf(m1 - m2) + s2;
+                max_mem[tid] = m2;
             }
             else {
                 // m1 > m2
-                smem[tid] = smem[tid] + expf(max_mem[tid+stride] - max_mem[tid]) * smem[tid+stride];
+                smem[tid] = s1 + expf(m2 - m1) * s2;
             }
         }
         __syncthreads();
+    float val = 0.0
+    if (tid < warpSize) {
+        unsigned mask = __activemask();
+        val = fmax(val, __shfl_down_sync(mask, val, 16));
+        val = fmax(val, __shfl_down_sync(mask, val, 8));
+        val = fmax(val, __shfl_down_sync(mask, val, 4));
+        val = fmax(val, __shfl_down_sync(mask, val, 2));
+        val = fmax(val, __shfl_down_sync(mask, val, 1));
+        if (tid == 0) max_x = val;
+    }
+    
     }
     if (tid == 0){
         max_x = max_mem[0];
@@ -58,7 +75,7 @@ __global__ void softmax_kernel(const float* input, float* output, int N) {
     }
     __syncthreads();*/
 
-    //stage 2: Calculate the softmax
+    //stage 3: Calculate the softmax
     for (int i = idx; i < N; i += blockDim.x * gridDim.x) {
         output[i] = expf(input[i] - max_x) / total_sum;
     }
