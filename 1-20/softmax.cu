@@ -2,24 +2,23 @@
 #include <math.h>
 
 __global__ void softmax_kernel(const float* input, float* output, int N) {
-    __shared__ float smem[512];
-    __shared__ float max_mem[512];
+    __shared__ float smem[1024];
+    __shared__ float max_mem[1024];
     __shared__ float max_x;
     __shared__ float total_sum;
     int tid = threadIdx.x;
     int idx = blockDim.x * blockIdx.x + tid;
-    float local_max = -INFINITY;
 
-    // Stage 1: find max values (single thread of block)
+    // Stage 1: find max values and build up the sum
     float m_t = -INFINITY;
     float s_t = 0.0f;
     for (int i = idx; i < N; i += blockDim.x * gridDim.x) {
         float x = input[i];
         if (x > m_t) {
-            s_t = s_t * expf(m_t-x) + 1;  // 1 = expf(x-x)
+            s_t = s_t * __expf(m_t-x) + 1;  // 1 = expf(x-x)
             m_t = x;
         }
-        else s_t += expf(x - m_t);
+        else s_t += __expf(x - m_t);
     }
     smem[tid] = s_t;
     max_mem[tid] = m_t;
@@ -36,54 +35,60 @@ __global__ void softmax_kernel(const float* input, float* output, int N) {
                 smem[tid] = s2;
             }
             else if (m1 < m2) {
-                smem[tid] = s1 * expf(m1 - m2) + s2;
+                smem[tid] = s1 * __expf(m1 - m2) + s2;
                 max_mem[tid] = m2;
             }
             else {
                 // m1 > m2
-                smem[tid] = s1 + expf(m2 - m1) * s2;
+                smem[tid] = s1 +  s2 *  __expf(m2 - m1);
             }
         }
         __syncthreads();
-    float val = 0.0
-    if (tid < warpSize) {
-        unsigned mask = __activemask();
-        val = fmax(val, __shfl_down_sync(mask, val, 16));
-        val = fmax(val, __shfl_down_sync(mask, val, 8));
-        val = fmax(val, __shfl_down_sync(mask, val, 4));
-        val = fmax(val, __shfl_down_sync(mask, val, 2));
-        val = fmax(val, __shfl_down_sync(mask, val, 1));
-        if (tid == 0) max_x = val;
     }
+    // warp shuffle final part
+    unsigned mask = __activemask();
+    if (tid < warpSize) {
+        int lane = tid & 31;
+        float s1 = smem[tid];
+        float m1 = max_mem[tid];
+        #pragma unroll
+        for (int wstride = warpSize/2; wstride >= 1; wstride /= 2) {
+            float s2 = __shfl_down_sync(mask, s1, wstride);
+            float m2 = __shfl_down_sync(mask, m1, wstride);
+            if (lane < wstride) {
+                if (s2 == 0.0f) {/*Do nothing*/}
+                    else if (s1 == 0.0f) {
+                        m1 = m2; 
+                        s1 = s2;
+                    }
+                    else if (m1 < m2) {
+                        s1 = s1 * __expf(m1 - m2) + s2;
+                        m1 = m2;
+                    }
+                    else {
+                        // m1 > m2
+                        s1 = s1 + __expf(m2 - m1) * s2;
+                    }
+            }
+        }
+        if (tid == 0){
+        max_x = m1;
+        total_sum = s1;
+        }
+    }   
     
-    }
-    if (tid == 0){
-        max_x = max_mem[0];
-        total_sum = smem[0];
-    }
+    
     __syncthreads();
-    /*float val = smem[tid];
-    // warp shuffling
-    if (tid < warpSize) {
-        unsigned mask = __activemask();
-        val = fmax(val, __shfl_down_sync(mask, val, 16));
-        val = fmax(val, __shfl_down_sync(mask, val, 8));
-        val = fmax(val, __shfl_down_sync(mask, val, 4));
-        val = fmax(val, __shfl_down_sync(mask, val, 2));
-        val = fmax(val, __shfl_down_sync(mask, val, 1));
-        if (tid == 0) max_x = val;
-    }
-    __syncthreads();*/
 
     //stage 3: Calculate the softmax
     for (int i = idx; i < N; i += blockDim.x * gridDim.x) {
-        output[i] = expf(input[i] - max_x) / total_sum;
+        output[i] = __expf(input[i] - max_x) / total_sum;
     }
 }
 
 // input, output are device pointers (i.e. pointers to memory on the GPU)
 extern "C" void solve(const float* input, float* output, int N) {
-    int threadsPerBlock = 256;
+    int threadsPerBlock = 1024;
     int blocksPerGrid = 1;//(N + threadsPerBlock - 1) / threadsPerBlock;
 
     softmax_kernel<<<blocksPerGrid, threadsPerBlock>>>(input, output, N);

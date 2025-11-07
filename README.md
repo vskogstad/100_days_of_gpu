@@ -45,3 +45,5 @@ Day 22: Ironed out some bugs in my softmax-kernel. Added warp shuffling. Attempt
 Day 23: Online softmax, single block.
 
 Day 24: Better guards, incomplete warp-shuffle.
+
+Day 25: Warp shuffle fixed. Max warp occupancy, 57th percentile. Moving on to softmax attention.
