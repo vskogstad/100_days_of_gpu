@@ -48,4 +48,4 @@ Day 24: Better guards, incomplete warp-shuffle.
 
 Day 25: Warp shuffle fixed. Max warp occupancy, 57th percentile. Moving on to softmax attention.
 
-Day 26: Not much progress on attention kernel today. Tried to understand the proper tiling efficiently. I think I might just be subconciously stalling by watching/reading passively instead of trying and failing to implement. 
+Day 26: Not much progress on attention kernel today. Tried to understand how to properly tile the problem in a way that would be efficient and understandable both for the matmul part and the softmax. I think I might be subconciously stalling by watching/reading passively instead of trying and failing to implement. 
