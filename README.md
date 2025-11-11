@@ -51,3 +51,7 @@ Day 25: Warp shuffle fixed. Max warp occupancy, 57th percentile. Moving on to so
 Day 26: Not much progress on attention kernel today. Tried to understand how to properly tile the problem in a way that would be efficient and understandable both for the matmul part and the softmax. I think I might be subconciously stalling by watching/reading passively instead of trying and failing to implement. 
 
 Day 27: Continued with attention kernel. Ended up with grouping each row of Q into separate block. Code is non-functional but basic structure is there. 
+
+Day 28: Working attention kernel! Slow as I am using a lot of atomicAdd directly to the output-matrix. Next I need to accumulate in shared memory before writing to output.
+
+Day 29: Tiled write to shared memory then atomicAddto output matrix. Some improvement but not much. The best attention implementations on leetGPU are still 20x faster. Need to go through those step by step and try to understand how they work.
