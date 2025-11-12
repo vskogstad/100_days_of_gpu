@@ -55,3 +55,5 @@ Day 27: Continued with attention kernel. Ended up with grouping each row of Q in
 Day 28: Working attention kernel! Slow as I am using a lot of atomicAdd directly to the output-matrix. Next I need to accumulate in shared memory before writing to output.
 
 Day 29: Tiled write to shared memory then atomicAddto output matrix. Some improvement but not much. The best attention implementations on leetGPU are still 20x faster. Need to go through those step by step and try to understand how they work.
+
+Day 30: Not very bright today. Attempt at dot-product kernel instead of continuing on attention, but still struggled beyond naive implementation.
