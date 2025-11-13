@@ -57,3 +57,5 @@ Day 28: Working attention kernel! Slow as I am using a lot of atomicAdd directly
 Day 29: Tiled write to shared memory then atomicAddto output matrix. Some improvement but not much. The best attention implementations on leetGPU are still 20x faster. Need to go through those step by step and try to understand how they work.
 
 Day 30: Not very bright today. Attempt at dot-product kernel instead of continuing on attention, but still struggled beyond naive implementation.
+
+Day 31: Matrix add.
