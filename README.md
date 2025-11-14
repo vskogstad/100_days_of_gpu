@@ -59,3 +59,5 @@ Day 29: Tiled write to shared memory then atomicAddto output matrix. Some improv
 Day 30: Not very bright today. Attempt at dot-product kernel instead of continuing on attention, but still struggled beyond naive implementation.
 
 Day 31: Matrix add.
+
+Day 32: GEMM. Not finished.
