@@ -61,3 +61,5 @@ Day 30: Not very bright today. Attempt at dot-product kernel instead of continui
 Day 31: Matrix add.
 
 Day 32: GEMM. Not finished.
+
+Day 33: Did a study session on siboehms amtmul block, worked a little bit more on GEMM kernel.

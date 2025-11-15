@@ -5,16 +5,17 @@ __global__ void gemm(const half* A, const half* B, half* C, int M, int N, int K,
     // naive to high performance implementation, Following along with https://siboehm.com/articles/22/CUDA-MMM eventually
     int tx = threadIdx.x;
     int ty = threadIdx.y;
-    int idx = blockDim.x * blockIdx.x + tid;
-    int stride = blockDim.x * gridDim.x;
-    for (int i = idx; i < M*N; i+= stride) {
+    int xi = blockIdx.x * blockDim.x + tx;
+    int yi = blockIdx.y * blockDim.y + ty;
+    int idx = yi * N + xi;
+    if (yi < M && xi < N){
         float acc = 0.0f;
         for (int j = 0; j < K; j++) {
-            acc += A
+            acc +=  __half2float((A[yi*K + j] * B[N*j + xi]));
         }
-
-        
+        C[idx] = alpha *acc + beta * __half2float(C[idx]);
     }
+    
 
 }
 
