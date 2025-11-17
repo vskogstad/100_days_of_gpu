@@ -65,3 +65,5 @@ Day 32: GEMM. Not finished.
 Day 33: Did a study session on siboehms mamtmul block, worked a little bit more on GEMM kernel.
 
 Day 34: Completed two first parts of GEMM kernel. Working on shared memory.
+
+Day 35: Shared memory working. Roughly same speed on LeetGPU.
