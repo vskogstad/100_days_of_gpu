@@ -70,3 +70,5 @@ Day 35: Shared memory working. Roughly same speed on LeetGPU.
 
 Day 36: Read through kernel 4 on [the blogpost](https://siboehm.com/articles/22/CUDA-MMM)/chatted with GPT about 1D-blocktiling but didn't actually implement. Need to better balance both trying to actually understand what I'm doing, but not use lack of clear understanding as a crutch to delay writing code. I think I sometimes do the latter, though you typically get at least some more understanding from trying to implent. 
 Implemented the (easy) rainbow table kernel on leetGPU.
+
+Day 37: Implemented columnwise 1D blocktiling (kernel 4). Also loading A_s transposed.
