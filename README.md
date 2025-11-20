@@ -72,3 +72,5 @@ Day 36: Read through kernel 4 on [the blogpost](https://siboehm.com/articles/22/
 Implemented the (easy) rainbow table kernel on leetGPU.
 
 Day 37: Implemented columnwise 1D blocktiling (kernel 4). Also loading A_s transposed.
+
+Day 38: Implemented 2D blocktiling to GEMM. Implemented an int8 matmul with scaling factors and zero-point adjustment.
