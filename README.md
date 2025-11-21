@@ -74,3 +74,5 @@ Implemented the (easy) rainbow table kernel on leetGPU.
 Day 37: Implemented columnwise 1D blocktiling (kernel 4). Also loading A_s transposed.
 
 Day 38: Implemented 2D blocktiling to GEMM. Implemented an int8 matmul with scaling factors and zero-point adjustment.
+
+Day 39: Implemented Batched matrix multiply on leetGPU today. Batch dimension ended up not really being much of a factor, so it was mainly repetition from earlier days. Probably neccessary, as I am still not very confident about indexing after threadwise tiling. 
