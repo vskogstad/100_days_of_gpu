@@ -76,3 +76,5 @@ Day 37: Implemented columnwise 1D blocktiling (kernel 4). Also loading A_s trans
 Day 38: Implemented 2D blocktiling to GEMM. Implemented an int8 matmul with scaling factors and zero-point adjustment.
 
 Day 39: Implemented Batched matrix multiply on leetGPU today. Batch dimension ended up not really being much of a factor, so it was mainly repetition from earlier days. Probably neccessary, as I am still not very confident about indexing after threadwise tiling. 
+
+Day 40: Not written a lot of code today, but did an hour of kernel study group, then chatting with LLM to set up a template for running CUDA code from pytorch/CuTe templates provided for the NVFP4 challenge. Almost all of the code is LLM-written, so maybe this is my first day with no kernels written? Learned about load_inline.
