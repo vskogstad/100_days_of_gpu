@@ -4,10 +4,16 @@ from torch.utils.cpp_extension import load_inline
 source = r"""
 #include <torch/extension.h>
 
-// __global__ device kernel(s) here
+#define CEIL_DIV(A, B) ((A + B - 1) / B)
+
+__global__ void gemv(at::Half* c, int numel) {
+    int tid = threadIdx.x;
+    int idx = blockIdx.x * blockDim.x + tid;
+    if (idx < numel) c[idx] = c[0];
+}
 
 // C++ host launcher that takes torch::Tensor, gets raw pointers, launches kernels
-void nvfp4_gemv_launcher(
+void nvfp4_gemv(
     torch::Tensor a,
     torch::Tensor b,
     torch::Tensor sfa,
@@ -15,10 +21,17 @@ void nvfp4_gemv_launcher(
     torch::Tensor c
 ) {
     // get sizes, set up grid/block, call <<<>>> on __global__ kernel
-}
-
-PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
-    m.def("nvfp4_gemv", &nvfp4_gemv_launcher, "NVFP4 GEMV kernel");
+    const int64_t M = a.size(0);
+    const int64_t K = a.size(1);
+    const int64_t L = a.size(2);
+    
+    auto* c_ptr   = c.data_ptr<at::Half>();   
+    int numel = M*L;
+    int T = 512;
+    int threadsPerBlock = 512;
+    dim3 numBlocks(CEIL_DIV(M, T), K, L);
+    gemv<<<numBlocks, threadsPerBlock>>>(c_ptr, numel);
+    
 }
 """
 
@@ -54,6 +67,6 @@ def custom_kernel(data: input_t) -> output_t:
     # Your implementation here
 
     # Call compiled launcher (it gets tensors, not raw pointers):
-    _ext.nvfp4_gemv(a, b, sfa, sfb, c)
-    
+    # _ext.nvfp4_gemv(a, b, sfa, sfb, c)
+    c.zero_()
     return c
