@@ -80,3 +80,5 @@ Day 39: Implemented Batched matrix multiply on leetGPU today. Batch dimension en
 Day 40: Not written a lot of code today, but did an hour of kernel study group, then chatting with LLM to set up a template for running CUDA code from pytorch/CuTe templates provided for the NVFP4 challenge. Almost all of the code for today is LLM-written, so maybe this is my first day with no kernels? Learned about load_inline.
 
 Day 41: More attempts at getting inline CUDA to work. Not compiling yet.
+
+Day 42: Some more work on getting inline CUDA up and running. Did a FP16 Batched Matmul leetGPU kernel.
