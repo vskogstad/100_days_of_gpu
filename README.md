@@ -82,3 +82,5 @@ Day 40: Not written a lot of code today, but did an hour of kernel study group, 
 Day 41: More attempts at getting inline CUDA to work. Not compiling yet.
 
 Day 42: Some more work on getting inline CUDA up and running. Did a FP16 Batched Matmul leetGPU kernel.
+
+Day 43: First NVFP4 kernel passing all tests! Code is a mess of me and 5.1 iterating back and forth but feels really good to have made progress.
