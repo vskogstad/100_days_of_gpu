@@ -61,76 +61,82 @@ __global__ void gemv(
     if (m >= M || l >= L) return;
 
     int numel = M * L;
-
     int C_idx = M*l + m;
-        
-    float acc = 0.0f;
-    for (int pair = 0; pair < K_pairs; pair++) {
-        // order of memory [m, l, k]
-        int block_k = pair/pairs_per_block;
-        // pair is your “k along fp4x2” index
 
-        // A: [M, K_pairs, L]
-        int64_t A_idx = m * a_s0 + pair * a_s1 + l * a_s2;
-
-        // B: [1, K_pairs, L]
-        int64_t B_idx =         pair * b_s1 + l * b_s2;
-
-        // sfa: [M, K_blocks, L]
-        int64_t sfa_idx = m * sfa_s0 + block_k * sfa_s1 + l * sfa_s2;
-
-        // sfb: [1, K_blocks, L]
-        int64_t sfb_idx =              block_k * sfb_s1 + l * sfb_s2;
-        //int A_idx   = m*L*K_pairs + l*K_pairs + pair;  
-        //int sfa_idx = m*L*K_blocks + l*K_blocks + block_k;
-        //int B_idx   = l*K_pairs + pair;
-        //int sfb_idx = l*K_blocks + block_k;
-        
-        // fp4/fp8 conversion:
-        __nv_fp4x2_storage_t a_pair = a_fp4x2[A_idx];
-        __nv_fp4x2_storage_t b_pair = b_fp4x2[B_idx];
-
-        // 2) Decode FP4x2 -> half2 (two fp16 values)
-        __half2_raw h2_raw = __nv_cvt_fp4x2_to_halfraw2(a_pair, __NV_E2M1);
-        __half2 h2 = *reinterpret_cast<__half2*>(&h2_raw);
-
-        __half a0 = __low2half(h2);
-        __half a1 = __high2half(h2);
-        
-        
-        __half2_raw h2b_raw = __nv_cvt_fp4x2_to_halfraw2(b_pair, __NV_E2M1);
-        __half2 h2b = *reinterpret_cast<__half2*>(&h2b_raw);
-
-        __half b0 = __low2half(h2b);
-        __half b1 = __high2half(h2b);
-        
-        
-
-        const __nv_fp8_storage_t* Sa_fp8 =
+    // initial loop, store tile of B into smem
+    const __nv_fp8_storage_t* Sa_fp8 =
             reinterpret_cast<const __nv_fp8_storage_t*>(sfa);
+    const __nv_fp8_storage_t* Sb_fp8 =
+            reinterpret_cast<const __nv_fp8_storage_t*>(sfb);
+
+    float acc = 0.0f;
+    
+    // outer loop over blocks with scaling factor
+    for (int block_k = 0; block_k < K_blocks; block_k++) {
+        // sfa/sfb: [M, K_blocks, L]
+        int64_t sfa_idx = m * sfa_s0 + block_k * sfa_s1 + l * sfa_s2;
+        int64_t sfb_idx =              block_k * sfb_s1 + l * sfb_s2;
+
+
         __nv_fp8_storage_t sa_code = Sa_fp8[sfa_idx];
         __half_raw sa_raw = __nv_cvt_fp8_to_halfraw(sa_code, __NV_E4M3);
         __half sa = *reinterpret_cast<__half*>(&sa_raw);
         
-        const __nv_fp8_storage_t* Sb_fp8 =
-            reinterpret_cast<const __nv_fp8_storage_t*>(sfb);
+
         __nv_fp8_storage_t sb_code = Sb_fp8[sfb_idx];
         __half_raw sb_raw = __nv_cvt_fp8_to_halfraw(sb_code, __NV_E4M3);
         __half sb = *reinterpret_cast<__half*>(&sb_raw);
 
-        // 4) Apply scale(s). If there were a tensor fp32 scale S_tensor, you’d fold it in here.
-        a0 = __hmul(a0, sa);
-        a1 = __hmul(a1, sa);
+
+        int pair_base = block_k * pairs_per_block;
+        // Inner loop over 
+        for (int t= 0; t < pairs_per_block; t++) {
+            // order of memory [m, l, k]
+            int pair = pair_base + t;
+
+            // A / B: [M, K_pairs, L]
+            int64_t A_idx = m * a_s0 + pair * a_s1 + l * a_s2;
+            int64_t B_idx =         pair * b_s1 + l * b_s2;
+
+
+            //int A_idx   = m*L*K_pairs + l*K_pairs + pair;  
+            //int sfa_idx = m*L*K_blocks + l*K_blocks + block_k;
+            //int B_idx   = l*K_pairs + pair;
+            //int sfb_idx = l*K_blocks + block_k;
+            
+            // fp4/fp8 conversion:
+            __nv_fp4x2_storage_t a_pair = a_fp4x2[A_idx];
+            __nv_fp4x2_storage_t b_pair = b_fp4x2[B_idx];
+
+            // 2) Decode FP4x2 -> half2 (two fp16 values)
+            __half2_raw h2_raw = __nv_cvt_fp4x2_to_halfraw2(a_pair, __NV_E2M1);
+            __half2 h2 = *reinterpret_cast<__half2*>(&h2_raw);
+
+            __half a0 = __low2half(h2);
+            __half a1 = __high2half(h2);
+            
+            
+            __half2_raw h2b_raw = __nv_cvt_fp4x2_to_halfraw2(b_pair, __NV_E2M1);
+            __half2 h2b = *reinterpret_cast<__half2*>(&h2b_raw);
+
+            __half b0 = __low2half(h2b);
+            __half b1 = __high2half(h2b);
+            
+            
+
+            // 4) Apply scale(s). If there were a tensor fp32 scale S_tensor, you’d fold it in here.
+            a0 = __hmul(a0, sa);
+            a1 = __hmul(a1, sa);
+            
+            b0 = __hmul(b0, sb);
+            b1 = __hmul(b1, sb);
         
-        b0 = __hmul(b0, sb);
-        b1 = __hmul(b1, sb);
-    
-    
-        acc += __half2float(a0) * __half2float(b0)
-             + __half2float(a1) * __half2float(b1);
+        
+            acc += __half2float(a0) * __half2float(b0)
+                + __half2float(a1) * __half2float(b1);
 
+        }
     }
-
     if (C_idx < numel) {
         C[C_idx] = __float2half(acc);
     }
@@ -157,7 +163,7 @@ void nvfp4_gemv(
     const uint8_t* sfb_ptr = static_cast<const uint8_t*>(sfb.data_ptr());
     auto*          c_ptr   = static_cast<at::Half*>(c.data_ptr());
 
-    int threadsPerBlock = 512;
+    int threadsPerBlock = 128;
     int T = threadsPerBlock;
     
     const int64_t a_s0 = a.stride(0);
@@ -217,11 +223,10 @@ void nvfp4_gemv(
 _ext = load_inline(
     name="nvfp4_gemv_ext",
     cpp_sources=[cpp_src],
-    cuda_sources=[cuda_src],  
+    cuda_sources=[cuda_src],
     functions=["nvfp4_gemv"],
     verbose=False,
 )
-
 
 
 def custom_kernel(data: input_t) -> output_t:
@@ -247,5 +252,5 @@ def custom_kernel(data: input_t) -> output_t:
 
     # Call compiled launcher (it gets tensors, not raw pointers):
     _ext.nvfp4_gemv(a, b, sfa, sfb, c)
-    
+
     return c
