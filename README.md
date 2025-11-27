@@ -84,3 +84,6 @@ Day 41: More attempts at getting inline CUDA to work. Not compiling yet.
 Day 42: Some more work on getting inline CUDA up and running. Did a FP16 Batched Matmul leetGPU kernel.
 
 Day 43: First NVFP4 kernel passing all tests! Code is a mess of me and 5.1 iterating back and forth but feels really good to have made progress.
+
+Day 44: Was able to get cuda NVFP4 down to just about exactly the same time as the pytorch baseline ~150 us. Heavy LLM usage. With just one more day left to submit, I think I might have lost sight of what I should be targeting from the challenge (learning). As iterations pile on and the codebase gets more involved, it's too tempting to be playing LLM slots, hoping claude will come up with a better solution on the next prompt. On a postive note, I've still learned a lot, but I would definitely not be able to rewrite the kernel again from scratch.
+Gonna try to watch the GPU-mode video on CuTe and try to submit a solution using that tomorrow.
