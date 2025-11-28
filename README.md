@@ -89,3 +89,5 @@ Day 44: Was able to get cuda NVFP4 down to just about exactly the same time as t
 Gonna try to watch the GPU-mode video on CuTe and try to submit a solution using that tomorrow.
 
 Day 45: Spent today mostly as planned. Going through the video and then the reference kernel line by line with ChatGPT. Took more time than anticipated, but feelt worthwile. Haven't written any new code today. Going to go through the blog posts covering the kernel and improvements tomorrow.
+
+Day 46: Experimenting a little bit with the launch grid patterns. Get some good speedups just by decreasing tpb. 

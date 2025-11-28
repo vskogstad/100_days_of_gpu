@@ -26,6 +26,7 @@ def kernel(
     mB_nkl: cute.Tensor,
     mSFA_mkl: cute.Tensor,
     mSFB_nkl: cute.Tensor,
+    accum: cute.Tensor,
     mC_mnl: cute.Tensor,
 ):
     # Get CUDA block and thread indices
@@ -141,7 +142,7 @@ def my_kernel(
 
     sfb_layout = blockscaled_utils.tile_atom_to_shape_SF(b_tensor.shape, sf_vec_size)
     sfb_tensor = cute.make_tensor(sfb_ptr, sfb_layout)
-
+    res = cute.make_zeros
     # Compute grid dimensions
     # Grid is (M_blocks, 1, L) where:
     # - M_blocks = ceil(M / 128) to cover all output rows
@@ -153,7 +154,7 @@ def my_kernel(
     )
 
     # Launch the CUDA kernel
-    kernel(a_tensor, b_tensor, sfa_tensor, sfb_tensor, c_tensor).launch(
+    kernel(a_tensor, b_tensor, sfa_tensor, sfb_tensor, accum, c_tensor).launch(
         grid=grid,
         block=[threads_per_cta, 1, 1],
         cluster=(1, 1, 1),
