@@ -6,7 +6,7 @@ from cutlass.cute.runtime import make_ptr
 from task import input_t, output_t
 
 # Kernel configuration parameters
-mma_tiler_mnk = (32, 1, 256)  # Tile sizes for M, N, K dimensions
+mma_tiler_mnk = (16, 32, 32)  # Tile sizes for M, N, K dimensions
 ab_dtype = cutlass.Float4E2M1FN  # FP4 data type for A and B
 sf_dtype = cutlass.Float8E4M3FN  # FP8 data type for scale factors
 c_dtype = cutlass.Float16  # FP16 output type
@@ -59,6 +59,8 @@ def kernel(
     tCgC = gC_mnl[tidx, None, bidx, bidy, bidz]
     tCgC = cute.make_tensor(tCgC.iterator, 1)
     res = cute.zeros_like(tCgC, cutlass.Float32)
+
+    
 
     # Get the number of k tiles (depth dimension) for the reduction loop
     k_tile_cnt = gA_mkl.layout[3].shape
@@ -142,7 +144,7 @@ def my_kernel(
 
     sfb_layout = blockscaled_utils.tile_atom_to_shape_SF(b_tensor.shape, sf_vec_size)
     sfb_tensor = cute.make_tensor(sfb_ptr, sfb_layout)
-    res = cute.make_zeros
+    
     # Compute grid dimensions
     # Grid is (M_blocks, 1, L) where:
     # - M_blocks = ceil(M / 128) to cover all output rows

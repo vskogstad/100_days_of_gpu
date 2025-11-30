@@ -91,3 +91,9 @@ Gonna try to watch the GPU-mode video on CuTe and try to submit a solution using
 Day 45: Spent today mostly as planned. Going through the video and then the reference kernel line by line with ChatGPT. Took more time than anticipated, but feelt worthwile. Haven't written any new code today. Going to go through the blog posts covering the kernel and improvements tomorrow.
 
 Day 46: Experimenting a little bit with the launch grid patterns. Get some good speedups just by decreasing tpb. 
+
+Day 47:
+So I didn't produce any code today. Watched Tri Daos video on CuteDSL. Looked at the nvfp4 - atomic add example which parallelizes along the k-dimension but did not implement it myself. It's not conceptually different from what I've done before, but the CuTe-syntax is still foreign so I have to basically copy paste line by line when trying to reimplement... Started looking at tensor cores but did not understand much.
+
+Day 48:
+Today I watched the GPU_mode video on tensor cores and started going through the CuTe blackwell fp16 tutorial gemm line by line. Both pipelining and tensor cores are new, so need some time to work through. Feels like I'm making some progress, but will have to implement and repeat it again later.
