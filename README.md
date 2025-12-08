@@ -97,3 +97,6 @@ So I didn't produce any code today. Watched Tri Daos video on CuteDSL. Looked at
 
 Day 48:
 Today I watched the GPU_mode video on tensor cores and started going through the CuTe blackwell fp16 tutorial gemm line by line. Both pipelining and tensor cores are new, so need some time to work through. Feels like I'm making some progress, but will have to implement and repeat it again later.
+
+Day 49:
+Back from a week of vacation. Not much kernel-progress today, but did a lot of work in pytorch. Watched through a triton-video and the first half of the latest GPU MODE video regarding the NVFP4 contest. Honestly found it a bit hard to follow. 
