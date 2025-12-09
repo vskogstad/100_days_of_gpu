@@ -100,3 +100,6 @@ Today I watched the GPU_mode video on tensor cores and started going through the
 
 Day 49:
 Back from a week of vacation. Not much kernel-progress today, but did a lot of work in pytorch. Watched through a triton-video and the first half of the latest GPU MODE video regarding the NVFP4 contest. Honestly found it a bit hard to follow. 
+
+Day 50:
+Softmax kernel in triton.
