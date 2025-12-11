@@ -106,3 +106,6 @@ Attempted softmax kernel in triton.
 
 Day 51:
 Just working through basic triton kernels. Vector add, matrix add, reverse array.
+
+Day 52: 
+Naive softmax kernel in triton, then watched relevant part of Umar Jamil video on flash attention afterwards.
