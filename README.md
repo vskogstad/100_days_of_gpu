@@ -109,3 +109,9 @@ Just working through basic triton kernels. Vector add, matrix add, reverse array
 
 Day 52: 
 Naive softmax kernel in triton, then watched relevant part of Umar Jamil video on flash attention afterwards.
+
+Day 53:
+Attention as an autograd function in pytorch. Implemented the forward pass.
+
+Day 54:
+Flash-attention as an autograd function in pytorch. Forward only. Triton setup.
