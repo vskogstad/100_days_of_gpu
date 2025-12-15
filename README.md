@@ -115,3 +115,9 @@ Attention as an autograd function in pytorch. Implemented the forward pass.
 
 Day 54:
 Flash-attention as an autograd function in pytorch. Forward only. Triton setup.
+
+Day 55: 
+Translated my pytorch flash-attention kernel into triton. Not passing tests yet.
+
+Day 56: 
+Flash-Attention forward with causal mask in Triton. Super happy with that. Backward pass in pytorch next. 
