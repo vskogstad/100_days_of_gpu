@@ -121,3 +121,6 @@ Translated my pytorch flash-attention kernel into triton. Not passing tests yet.
 
 Day 56: 
 Flash-Attention forward with causal mask in Triton. Super happy with that. Backward pass in pytorch next. 
+
+Day 57: 
+Set up the basic structure of the backward pass with recomputation in pytorch. Spent probably 2 hours on deriving the backward pass of flash attention on paper. Had a lot of help from Claude. 
