@@ -127,3 +127,6 @@ Set up the basic structure of the backward pass with recomputation in pytorch. S
 
 Day 58:
 Working flash attention backward pass in pytorch. Started setting up basic benchmarking code to compare against torch.nn.functional and pytorch with torch.compile().
+
+Day 59:
+Implemented non-tiled backward pass in pytorch. Benchmarking of forward, backward and both. Testing on leaderboard. 27.4ms.
