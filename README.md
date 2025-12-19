@@ -130,3 +130,6 @@ Working flash attention backward pass in pytorch. Started setting up basic bench
 
 Day 59:
 Implemented non-tiled backward pass in pytorch. Benchmarking of forward, backward and both. Testing on leaderboard. 27.4ms.
+
+Day 60:
+Implemented non-causal bwd pass in triton. 
