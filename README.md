@@ -133,3 +133,9 @@ Implemented non-tiled backward pass in pytorch. Benchmarking of forward, backwar
 
 Day 60:
 Implemented non-causal bwd pass in triton. 
+
+Day 61:
+Causal bwd in triton. Benchmarks to 18.9 secs.
+
+Day 62: 
+Got the leaderboard time down to 11.6ms by autotuning the block sizes and splitting dQ computation into a separate kernel.
