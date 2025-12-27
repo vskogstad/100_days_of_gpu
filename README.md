@@ -156,3 +156,6 @@ Day 67:
 Today I just wanted to submit a new leading time to the cs336 leaderboards.
 Ran full training run with triton kernel and confirmed that I get the same loss as previously with torch.compile()
 Started profiling my step to see if I could fuse in the attention gate. Realized that I spent one third of my total step time in the optimizer step. The ideal fix here would probably be to try to implement AdamW/Muon in Triton, but my band-aid fix was to increase my batch size to twice the "optimal batch size" and use gradient accumulation. Which makes the model less data-efficient, but increased throughput to 240k tok/s.
+
+Day 68:
+Back at it with CUDA. 2D element count kernel.
