@@ -139,3 +139,20 @@ Causal bwd in triton. Benchmarks to 18.9 secs.
 
 Day 62: 
 Got the leaderboard time down to 11.6ms by autotuning the block sizes and splitting dQ computation into a separate kernel.
+
+Day 63:
+Got the FA-kernel down to 9.9ms. Still 2x CudNN for seq 16384, but not that bad. Spending most of the time in my dK/dV backward. Doing something wrong, but not sure what. Register pressure?
+Tuning the kernel for my sequence length of 512 I am achieving roughly 95% of pytorch flash attention when benchmarking, which I am happy with. However getting it to actually perform like that within my existing pytorch-model has not been straight forward at all so far. Unsure what's the cause.
+
+Day 64 and 65: 
+Spent a lot of time profiling my triton function vs torch.nn. Still haven't 100 % confirmed why my code slows down when implemented as a torch autograd function, but it seems like it's graph breaks causing surrounding kernels to change. To be honest I think it was decently productive use of my time. I don't like profiling, so being forced to use it as a tool to try to fix an issue was probably helpful.
+Also changed the memory layout and the dimensions of my kernel from 3 to 4 to try to match torch.nn.scaled_dot_product_attention.
+
+Day 66:
+Finally got it to work! I had a graph-break in the backward caused by: precomputing D using torch.sum() and inspecting shapes and checking strides during backward kernel launch. 
+Implementing the precalculation of D in triton instead. I also ported back some of the changes I've made/bugs I've found from getting this to work within a module back to the leaderboard timings for larger matrices I get 9.8 secs, so a small improvement.
+
+Day 67:
+Today I just wanted to submit a new leading time to the cs336 leaderboards.
+Ran full training run with triton kernel and confirmed that I get the same loss as previously with torch.compile()
+Started profiling my step to see if I could fuse in the attention gate. Realized that I spent one third of my total step time in the optimizer step. The ideal fix here would probably be to try to implement AdamW/Muon in Triton, but my band-aid fix was to increase my batch size to twice the "optimal batch size" and use gradient accumulation. Which makes the model less data-efficient, but increased throughput to 240k tok/s.
